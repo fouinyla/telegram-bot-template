@@ -1,5 +1,5 @@
 import sqlalchemy as database
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.sql.elements import and_, or_
 from .models import *
 from os import getenv
@@ -8,7 +8,7 @@ from os import getenv
 class Database:
     def __init__(self):
         engine = database.create_engine(getenv("DATABASE"))
-        self.session = sessionmaker(bind=engine)
+        self.session = scoped_session(sessionmaker(bind=engine))
 
     def get_user(self, tg_id):
         with self.session() as session:

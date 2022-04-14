@@ -6,6 +6,6 @@ def user_main_markup():
     markup.row(types.KeyboardButton("First button", callback_data='first_button'))
     markup.row(
         types.KeyboardButton("Second button", callback_data='second_button'),
-        types.KeyboardButton("Third button", callback_data='third_button')
+        types.KeyboardButton("Notification", callback_data='third_button')
     )
     return markup
