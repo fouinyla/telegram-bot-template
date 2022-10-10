@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "uvicorn main:app"
+    ports:
+      - 80:8000
+    image: telegram-bot
+    container_name: telegram-bot-container
+    volumes:
+      - "./:/bot"
+    env_file:
+      - .env

@@ -1,19 +1,21 @@
+from os import path 
 from datetime import datetime
 from aiogram import types
-from db.db_connector import Database
-import const.phrases as phrases
-from const.const import *
+import bot.const.phrases as phrases
+from bot.const.const import *
 from . import markups
-from logic.notification_service import Notification_Service
+from settings import BASE_DIR
+# from bot.logic.notification_service import Notification_Service
+# from app.database.init import get_session
+
 
 
 class Controller:
     def __init__(self, bot):
         self.bot = bot
-        #self.db = Database()
-        self.notification = Notification_Service(
-            bot=self.bot,
-        )
+        # self.notification = Notification_Service(
+        #     bot=self.bot,
+        # )
 
     async def command_start(self, message):
         name = message.from_user.first_name
@@ -23,8 +25,8 @@ class Controller:
                 user_name=name
             )
         )
-        sticker = open("static/hello.webp", 'rb')
-        await self.bot.send_sticker(message.chat.id, sticker)
+        # sticker = open(path.join(BASE_DIR, "bot/static/hello.webp"), 'rb')
+        # await self.bot.send_sticker(message.chat.id, sticker)
         return dict(text=text, markup=markup)
 
     async def message_main_menu_buttons_click(self, message):
