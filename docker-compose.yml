@@ -2,16 +2,53 @@ version: '3.8'
 
 services:
   app:
+    image: telegram-bot
+    container_name: telegram-bot
     build:
       context: .
       dockerfile: Dockerfile
     command: >
-      sh -c "uvicorn main:app"
+      bash -c "/wait && alembic upgrade head && python main.py"
     ports:
       - 80:8000
-    image: telegram-bot
-    container_name: telegram-bot-container
     volumes:
-      - "./:/bot"
+      - ".:/backend"
+    environment:
+      - WAIT_HOSTS=mysql:${RDS_PORT}
     env_file:
       - .env
+    depends_on:
+      - mysql
+    networks:
+      - local
+
+  mysql:
+    image: mysql:8.0
+    container_name: 'telegram-bot-mysql'
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${RDS_DB_NAME}
+      - MYSQL_USER=${RDS_USERNAME}
+      - MYSQL_PASSWORD=${RDS_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+    ports:
+      - ${EXTERNAL_PORT}:${RDS_PORT}
+    expose:
+      - ${RDS_PORT}
+    volumes:
+      - ./app/database/mysql-data:/var/lib/mysql
+      - ./app/database/mysql-log:/var/log/mysql
+      - ./app/database/mysql-conf:/etc/mysql/conf.d
+    env_file:
+      - .env
+    networks:
+      - local
+
+volumes:
+  mysql_data:
+  mysql_log:
+  mysql_conf:
+
+networks:
+  local:
+    driver: bridge

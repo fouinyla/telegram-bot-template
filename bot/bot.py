@@ -1,8 +1,7 @@
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.fsm.storage.memory import MemoryStorage
-# from aiogram.dispatcher.filters import Text
-# from aiogram.utils.exceptions import *
+from aiogram.filters import Command
 from .logic.decorators import *
 from .logic.controller import Controller
 from settings import BOT_TOKEN
@@ -21,7 +20,7 @@ dp = Dispatcher(storage=MemoryStorage())
 c = Controller(bot=bot)
 
 
-@dp.message(commands='start')
+@dp.message(Command(commands=["start"]))
 # @rate_limit(2, "start")
 async def command_start_process(message: types.Message):
     response = await c.command_start(message=message)

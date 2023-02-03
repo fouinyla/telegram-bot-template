@@ -1,6 +1,7 @@
 # libs
+import contextlib
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session, Session
+from sqlalchemy.orm import sessionmaker, scoped_session
 # files
 from settings import DATABASE
 
@@ -16,7 +17,3 @@ db_credentials = "mysql+pymysql://{user}:{password}@{host}:{port}/{db_name}".for
 engine = create_engine(db_credentials)
 session = scoped_session(sessionmaker(bind=engine, expire_on_commit=False))
 
-
-def get_session() -> Session:
-    with session() as s:
-        yield s

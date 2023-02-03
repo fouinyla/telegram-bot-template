@@ -1,4 +1,4 @@
-from os import path 
+from os import path
 from datetime import datetime
 from aiogram import types
 import bot.const.phrases as phrases
@@ -6,7 +6,7 @@ from bot.const.const import *
 from . import markups
 from settings import BASE_DIR
 # from bot.logic.notification_service import Notification_Service
-# from app.database.init import get_session
+from app.database.db_connector import get_user
 
 
 

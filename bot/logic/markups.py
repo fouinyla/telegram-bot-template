@@ -4,6 +4,7 @@ from aiogram.types import KeyboardButton
 
 def user_main_markup():
     builder = ReplyKeyboardBuilder()
+
     builder.row(
         KeyboardButton(
             text="First button",
@@ -17,5 +18,5 @@ def user_main_markup():
             text="Notification"
         )
     )
-    markup = builder.as_markup()
-    return markup
+
+    return builder.as_markup()
