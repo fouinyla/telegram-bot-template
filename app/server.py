@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.types import Update
 
 from settings import *
@@ -28,7 +28,7 @@ async def root():
 
 
 @app.post("/")
-async def process_update(request: Request, session: Session = Depends(get_session)):
+async def process_update(request: Request, session: AsyncSession = Depends(get_session)):
     try:
         update = await request.json()
         update = Update(**update)

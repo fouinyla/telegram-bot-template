@@ -7,7 +7,6 @@ from .routers import commands_router, form_router, messages_router
 from .middlewares import LoggingMiddleware
 
 
-print("REDIS", REDIS)
 bot = Bot(token=BOT_TOKEN, parse_mode="html")
 dp = Dispatcher(storage=RedisStorage.from_url(REDIS))
 

@@ -2,7 +2,7 @@ from os import path
 from aiogram import Router, Bot
 from aiogram.types import Message, FSInputFile, MenuButtonWebApp, WebAppInfo
 from aiogram.filters import Command, ExceptionMessageFilter
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
 
 from app.database.models import *
@@ -14,7 +14,7 @@ commands_router = Router()
 
 
 @commands_router.message(Command(commands=["start"]))
-async def start(message: Message, bot: Bot, session: Session) -> None:
+async def start(message: Message, bot: Bot, session: AsyncSession) -> None:
     name = message.from_user.first_name
     markup = markups.user_main_markup()
     text = phrases.phrase_for_start_first_greeting(
@@ -24,7 +24,7 @@ async def start(message: Message, bot: Bot, session: Session) -> None:
     )
 
     # sending image sticker
-    sticker = FSInputFile(path.join(BASE_DIR, "bot/static/hello.webp"))
+    sticker = FSInputFile(path.join(BASE_DIR, "static/hello.webp"))
     await message.answer_sticker(sticker)
 
     # check if user exists
@@ -36,13 +36,13 @@ async def start(message: Message, bot: Bot, session: Session) -> None:
 
     # if not => create
     if not user:
-        await session.add(User(
+        session.add(User(
             name=name,
             tg_id=message.from_user.id,
             tg_username=message.from_user.username,
             is_admin=False
         ))
-        session.commit()
+        await session.commit()
 
     await bot.set_chat_menu_button(
         chat_id=message.chat.id,
