@@ -14,17 +14,18 @@ services:
     volumes:
       - ".:/backend"
     environment:
-      - WAIT_HOSTS=mysql:${RDS_PORT}
+      - WAIT_HOSTS=mysql:${RDS_PORT},redis:6379
     env_file:
       - .env
     depends_on:
       - mysql
+      - redis
     networks:
       - local
 
   mysql:
     image: mysql:8.0
-    container_name: 'telegram-bot-mysql'
+    container_name: telegram-bot-mysql
     restart: always
     environment:
       - MYSQL_DATABASE=${RDS_DB_NAME}
@@ -44,10 +45,27 @@ services:
     networks:
       - local
 
+  redis:
+    image: redis:latest
+    container_name: telegram-bot-redis
+    restart: always
+    ports:
+      - 6379:6379
+    expose:
+      - 6379
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/data
+    env_file:
+      - .env
+    networks:
+      - local
+
 volumes:
   mysql_data:
   mysql_log:
   mysql_conf:
+  redis:
 
 networks:
   local:

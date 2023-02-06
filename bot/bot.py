@@ -1,53 +1,23 @@
-import logging
-from aiogram import Bot, Dispatcher, types
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.filters import Command
-from .logic.decorators import *
-from .logic.controller import Controller
-from settings import BOT_TOKEN
+from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.redis import RedisStorage
 
-# from logic.middlewares import LoggingMiddleware
+from .decorators import *
+from settings import BOT_TOKEN, REDIS
+from .routers import commands_router, form_router, messages_router
+from .middlewares import LoggingMiddleware
 
 
-# dp.middleware.setup(LoggingMiddleware())
-# dp.middleware.setup(ThrottlingMiddleware(dispatcher=dp))
-
-
+print("REDIS", REDIS)
 bot = Bot(token=BOT_TOKEN, parse_mode="html")
-dp = Dispatcher(storage=MemoryStorage())
-# dp.middleware.setup(LoggingMiddleware())
-# dp.middleware.setup(ThrottlingMiddleware(dispatcher=dp))
-c = Controller(bot=bot)
+dp = Dispatcher(storage=RedisStorage.from_url(REDIS))
 
+# set middlewares
+dp.message.outer_middleware(LoggingMiddleware())
 
-@dp.message(Command(commands=["start"]))
-# @rate_limit(2, "start")
-async def command_start_process(message: types.Message):
-    response = await c.command_start(message=message)
-    await message.answer(
-        text=response["text"],
-        reply_markup=response["markup"]
-    )
-
-
-# @dp.message_handler(Text(equals="Notification"))
-# async def message_main_menu_button_notification_process(message: types.Message):
-#     response = await c.message_main_menu_buttons_click(message=message)
-#     await message.reply(
-#         text=response["text"],
-#         parse_mode="HTML",
-#         reply=False
-#     )
-
-
-# @dp.message_handler(Text(contains="button"))
-# async def message_main_menu_buttons_click_process(message: types.Message):
-#     response = await c.message_main_menu_buttons_click(message=message)
-#     await message.reply(
-#         text=response["text"],
-#         parse_mode="HTML",
-#         reply=False
-#     )
+# set routers
+dp.include_router(form_router)
+dp.include_router(commands_router)
+dp.include_router(messages_router)
 
 
 # @dp.errors_handler(exception=Exception)

@@ -8,6 +8,10 @@ logging.basicConfig(level=logging.INFO)
 
 BASE_DIR = getcwd()
 
+APP_HOSTNAME = getenv("APP_HOSTNAME")
+
+REDIS = f"redis://redis:6379"
+
 DEBUG = bool(int(getenv("DEBUG", 0)))
 
 BOT_TOKEN = getenv("BOT_TOKEN")

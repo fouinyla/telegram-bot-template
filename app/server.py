@@ -1,9 +1,12 @@
-# libs
 from fastapi import FastAPI, Request, Depends
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 from aiogram.types import Update
-# files
+
 from settings import *
 from bot.bot import dp, bot
+from app.database import get_session
 
 
 app = FastAPI(
@@ -16,6 +19,8 @@ app = FastAPI(
     redoc_url=None
 )
 
+templates = Jinja2Templates(directory="templates")
+
 
 @app.get("/ifrinjhreiioqnrpwwtrte")
 async def root():
@@ -23,10 +28,16 @@ async def root():
 
 
 @app.post("/")
-async def process_update(request: Request):
+async def process_update(request: Request, session: Session = Depends(get_session)):
     try:
         update = await request.json()
         update = Update(**update)
-        await dp.feed_update(bot=bot, update=update)
+        await dp.feed_update(bot=bot, update=update, session=session)
     except ValueError:
         logging.warning("body", await request.body())
+
+
+@app.get("/menu", response_class=HTMLResponse)
+async def get_menu_template(request: Request):
+    context = dict(request=request)
+    return templates.TemplateResponse("index.html", context=context)
