@@ -9,6 +9,7 @@ from app.database.models import *
 import bot.const.phrases as phrases
 from bot import markups
 from settings import BASE_DIR, APP_HOSTNAME
+from app.celery.tasks import send_message
 
 commands_router = Router()
 
@@ -46,10 +47,19 @@ async def start(message: Message, bot: Bot, session: AsyncSession) -> None:
 
     await bot.set_chat_menu_button(
         chat_id=message.chat.id,
-        menu_button=MenuButtonWebApp(text="Open Menu", web_app=WebAppInfo(url=f"{APP_HOSTNAME}/menu/"))
+        menu_button=MenuButtonWebApp(text="Open Menu", web_app=WebAppInfo(url=f"{APP_HOSTNAME}/menu/")),
     )
 
     await message.answer(
         text=text,
-        reply_markup=markup
+        reply_markup=markup,
+    )
+
+
+@commands_router.message(Command(commands=["check"]))
+async def check(message: Message, bot: Bot) -> None:
+    task = send_message.apply_async(args=[message.from_user.id])
+
+    await message.answer(
+        text="Ok",
     )

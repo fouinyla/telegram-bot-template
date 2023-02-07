@@ -1,9 +1,10 @@
 version: '3.8'
 
 services:
-  app:
+  bot:
     image: telegram-bot
     container_name: telegram-bot
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,14 +13,58 @@ services:
     ports:
       - 80:8000
     volumes:
-      - ".:/backend"
+      - .:/bot
     environment:
-      - WAIT_HOSTS=mysql:${RDS_PORT},redis:6379
+      - WAIT_HOSTS=mysql:${RDS_PORT},redis:${REDIS_PORT},rabbitmq:${RABBITMQ_PORT}
     env_file:
       - .env
     depends_on:
       - mysql
       - redis
+      - rabbitmq
+    networks:
+      - local
+
+  celery_worker:
+    container_name: telegram-bot-celery-worker
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      bash -c "celery -A app.celery worker --loglevel=info"
+    volumes:
+      - .:/bot
+    env_file:
+      - .env
+    # environment:
+    #   - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+    #   - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+    depends_on:
+      - bot
+      - redis
+      - rabbitmq
+    networks:
+      - local
+
+  flower:
+    container_name: telegram-bot-flower
+    restart: always
+    build:
+      context: .
+    command: >
+      bash -c "celery -A app.celery flower --port=5555"
+    ports:
+      - 5555:5555
+    volumes:
+      - .:/bot
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
+      - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}
+    depends_on:
+      - celery_worker
+      - redis
+      - rabbitmq
     networks:
       - local
 
@@ -50,12 +95,48 @@ services:
     container_name: telegram-bot-redis
     restart: always
     ports:
-      - 6379:6379
+      - ${REDIS_PORT}:${REDIS_PORT}
     expose:
-      - 6379
+      - ${REDIS_PORT}
     command: redis-server --save 20 1 --loglevel warning
     volumes:
-      - redis:/data
+      - redis:/var/lib/redis
+    env_file:
+      - .env
+    networks:
+      - local
+    
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: telegram-bot-redis-commander
+    restart: always
+    ports:
+      - ${REDIS_COMMANDER_PORT}:${REDIS_COMMANDER_PORT}
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOSTS=${REDIS_HOST}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - HTTP_USER=${REDIS_COMMANDER_USER}
+      - HTTP_PASSWORD=${REDIS_COMMANDER_PASSWORD}
+      - PORT=${REDIS_COMMANDER_PORT}
+    depends_on:
+      - redis
+    networks:
+      - local
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: telegram-bot-rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - 1${RABBITMQ_PORT}:1${RABBITMQ_PORT}
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
     env_file:
       - .env
     networks:
@@ -66,6 +147,7 @@ volumes:
   mysql_log:
   mysql_conf:
   redis:
+
 
 networks:
   local:
