@@ -9,13 +9,11 @@ services:
       context: .
       dockerfile: Dockerfile
     command: >
-      bash -c "/wait && alembic upgrade head && python main.py"
+      bash -c "alembic upgrade head && python main.py"
     ports:
       - 80:8000
     volumes:
       - .:/bot
-    environment:
-      - WAIT_HOSTS=mysql:${RDS_PORT},redis:${REDIS_PORT},rabbitmq:${RABBITMQ_PORT}
     env_file:
       - .env
     depends_on:
@@ -37,9 +35,6 @@ services:
       - .:/bot
     env_file:
       - .env
-    # environment:
-    #   - CELERY_BROKER_URL=${CELERY_BROKER_URL}
-    #   - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
     depends_on:
       - bot
       - redis

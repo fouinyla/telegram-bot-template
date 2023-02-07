@@ -8,7 +8,7 @@ from .celery import celery_app
 def send_message(chat_id):
     from bot.bot import bot
 
-    time.sleep(5)
+    time.sleep(10)
     loop = asyncio.get_event_loop()
     loop.run_until_complete(bot.send_message(
         chat_id=chat_id,
