@@ -25,7 +25,7 @@ DATABASE = dict(
 if DEBUG:
     logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
-REDIS = f'redis://{getenv("REDIS_HOST")}:{getenv("REDIS_PORT")}'
+REDIS = f'redis://{getenv("REDIS_HOST")}:{getenv("REDIS_PORT")}/0'
 
 RABBITMQ = f'amqp://{getenv("RABBITMQ_DEFAULT_USER")}:{getenv("RABBITMQ_DEFAULT_PASS")}@{getenv("RABBITMQ_HOST")}:{getenv("RABBITMQ_PORT")}'
 

@@ -20,7 +20,6 @@ cryptography = "^39.0.0"
 jinja2 = "^3.1.2"
 redis = "^4.4.2"
 celery = "^5.2.7"
-flower = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 python = "3.9.16"

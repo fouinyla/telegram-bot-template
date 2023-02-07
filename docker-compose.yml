@@ -60,7 +60,7 @@ services:
       - .:/bot
     environment:
       - CELERY_BROKER_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
-      - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}
+      - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}/0
     depends_on:
       - celery_worker
       - redis
