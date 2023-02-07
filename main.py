@@ -1,22 +1,5 @@
-import logging
-from fastapi import FastAPI, Request
-from aiogram import types
-from logic.bot import dp
+import uvicorn
 
 
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return "ok"
-
-
-@app.post("/")
-async def process_update(request: Request):
-    try:
-        update = await request.json()
-        update = types.Update(**update)
-        await dp.process_update(update)
-    except ValueError:
-        logging.warning("body", await request.body())
+if __name__ == "__main__":
+    uvicorn.run(app="app.server:app", host="0.0.0.0", port=8000, reload=True)

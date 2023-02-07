@@ -101,3 +101,8 @@ cython_debug/
 
 # Other files
 test.py
+
+# mysql container volumes
+app/database/mysql-conf
+app/database/mysql-data
+app/database/mysql-log

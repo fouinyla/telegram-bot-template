@@ -1,0 +1,21 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+
+# Python
+bot/__pycache__/
+bot/*/__pycache__/
+bot/*/*/__pycache__/
+bot/*/*/*/__pycache__/
+.env/
+.venv/
+venv/
+
+# Local PostgreSQL data
+data/# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.git
+.gitignore
