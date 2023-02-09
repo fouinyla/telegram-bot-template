@@ -4,19 +4,8 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 def user_main_markup() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
-
     builder.row(
-        KeyboardButton(
-            text="First button",
-        ),
+        KeyboardButton(text="Розыгрыш"),
+        KeyboardButton(text="Попросить помощь")
     )
-    builder.row(
-        KeyboardButton(
-            text="Second button"
-        ),
-        KeyboardButton(
-            text="Notification"
-        )
-    )
-
     return builder.as_markup(resize_keyboard=True)

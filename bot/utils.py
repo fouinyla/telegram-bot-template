@@ -1,12 +1,6 @@
 import json
 
 
-# using:
-# d = Dict(
-#   first="hello"
-# )
-# d.second = 5
-# print(d.first, d.second)
 class Dict(dict):
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__

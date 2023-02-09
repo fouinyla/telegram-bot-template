@@ -11,7 +11,7 @@ from app.database import get_session
 
 app = FastAPI(
     debug=DEBUG,
-    title="Telegram Bot",
+    title="Lottery Bot",
     description="",
     version="0.0.1",
     openapi_url=None,
