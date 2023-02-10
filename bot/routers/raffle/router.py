@@ -10,10 +10,10 @@ from bot.keyboards.reply.raffle import raffle_menu
 from bot.keyboards.reply.main_menu import user_main_markup
 from bot.keyboards.inline.payments import payment_methods
 
-from app.database.models import Raffle, User
+from app.database.models import Raffle, Winner, User
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc, not_
+from sqlalchemy import select, func, desc
 
 from settings import UKASSA_PAYMENT
 
@@ -44,9 +44,9 @@ async def send_current_prize(message: Message, session: AsyncSession):
 @raffle_router.message(F.text == "Победители")
 async def raffle_set_menu(message: Message, session: AsyncSession) -> None:
     winners = (await session.execute(
-        select(User.tg_username)
-        .order_by(desc(User.latest_date_win))
-        .where(not_(User.latest_date_win.__eq__(None)))
+        select(User.tg_username, Winner.prize)
+        .join(Winner, Winner.user_id == User.id)
+        .order_by(desc(Winner.date_of_victory))
         .limit(10)
     )).all()
     await message.answer(
@@ -98,4 +98,3 @@ async def successful_payment(message: Message):
             text="Поздравляем!\nВы участник!!",
             reply_markup=await user_main_markup()
         )
-

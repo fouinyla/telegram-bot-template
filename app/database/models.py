@@ -57,4 +57,5 @@ class Winner(Base):
     __tablename__ = 'winners'
     id: int = Column(Integer, primary_key=True, nullable=False)
     user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
-    date_of_victory: datetime = Column(DateTime, nullable=True)
+    date_of_victory: datetime = Column(DateTime, nullable=False)
+    prize: float = Column(Float, nullable=False)
