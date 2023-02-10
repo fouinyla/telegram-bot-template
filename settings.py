@@ -26,3 +26,5 @@ if DEBUG:
     logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 REDIS = f'redis://{getenv("REDIS_HOST")}:{getenv("REDIS_PORT")}/0'
+
+UKASSA_PAYMENT = getenv("UKASSA_PAYMENT")
