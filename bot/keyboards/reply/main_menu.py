@@ -2,7 +2,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 
-def user_main_markup() -> ReplyKeyboardMarkup:
+async def user_main_markup() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
     builder.row(
         KeyboardButton(text="Розыгрыш"),
