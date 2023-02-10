@@ -22,8 +22,6 @@ class User(Base):
     name: str = Column(String(50), nullable=False)
     tg_id: int = Column(Integer, nullable=False)
     tg_username: str = Column(String(32), nullable=True)
-    win_count: int = Column(Integer, default=0)
-    latest_date_win: datetime = Column(DateTime, nullable=True)
     date_of_registry: datetime = Column(DateTime, default=get_moscow_datetime())
     is_admin: bool = Column(Boolean, nullable=False, default=False)
 
@@ -53,3 +51,10 @@ class UserLot(Base):
     user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
     lot_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
     donated: float = Column(Float, nullable=False)
+
+
+class Winner(Base):
+    __tablename__ = 'winners'
+    id: int = Column(Integer, primary_key=True, nullable=False)
+    user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
+    date_of_victory: datetime = Column(DateTime, nullable=True)
