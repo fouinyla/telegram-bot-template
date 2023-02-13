@@ -1,13 +1,14 @@
+from typing import Union
+
 from aiogram import Router, F, Bot
 from aiogram.types import (
     Message,
     LabeledPrice,
     PreCheckoutQuery,
-    CallbackQuery,
+    CallbackQuery
 )
 
-from bot.keyboards.reply.raffle import raffle_menu
-from bot.keyboards.reply.main_menu import user_main_markup
+from bot.keyboards.inline.raffle import set_raffle_menu, back_to_raffle_menu
 from bot.keyboards.inline.payments import payment_methods
 
 from app.database.models import Raffle, Winner, User
@@ -24,42 +25,52 @@ PRICES = [LabeledPrice(label="Test label", amount=100*100)]
 
 
 @raffle_router.message(F.text == "Розыгрыш")
-async def raffle_set_menu(message: Message) -> None:
-    await message.answer(
-        text="Испытай удачу!",
-        reply_markup=await raffle_menu()
-    )
+@raffle_router.callback_query(lambda call: call.data == "back_raffle")
+async def main_raffle_menu(message: Message or CallbackQuery) -> Union[Message, bool]:
+    kwargs = {"text": "<b>Испытай удачу!</b>", "reply_markup": await set_raffle_menu()}
+    if isinstance(message, CallbackQuery):
+        return await message.message.edit_text(**kwargs)
+    return await message.answer(**kwargs)
+
+# =============================================================================== #
 
 
-@raffle_router.message(F.text == "Текущий приз")
-async def send_current_prize(message: Message, session: AsyncSession):
+@raffle_router.callback_query(lambda call: call.data == "current_prize")
+async def send_current_prize(call: CallbackQuery, session: AsyncSession):
     prize = (await session.execute(select(func.sum(Raffle.donated)))).scalar()
     prize = 0 if prize is None else prize
-    await message.answer(
-        f"Текущий приз: {prize}",
-        reply_markup=await raffle_menu()
+    await call.message.edit_text(
+        f"<b>Текущий банк:</b> {prize}₽",
+        reply_markup=await back_to_raffle_menu()
     )
 
+# =============================================================================== #
 
-@raffle_router.message(F.text == "Победители")
-async def raffle_set_menu(message: Message, session: AsyncSession) -> None:
+
+@raffle_router.callback_query(lambda call: call.data == "winners")
+async def raffle_set_menu(call: CallbackQuery, session: AsyncSession) -> None:
     winners = (await session.execute(
         select(User.tg_username, Winner.prize)
         .join(Winner, Winner.user_id == User.id)
         .order_by(desc(Winner.date_of_victory))
         .limit(10)
     )).all()
-    await message.answer(
-        text=f"Список победителей {winners}",
-        reply_markup=await raffle_menu()
+    if winners:
+        winner_list = "".join(f"{num}. @{winner[0]} — \n" for num, winner in enumerate(winners))
+    else:
+        winner_list = "Пока никто не победил"
+
+    await call.message.edit_text(
+        text=f"<b>Список последних 10 победителей:</b> \n\n{winner_list}\n",
+        reply_markup=await back_to_raffle_menu()
     )
 
 # =================================================================== #
 
 
-@raffle_router.message(F.text == "Участвовать")
-async def choose_payment(message: Message):
-    await message.answer(
+@raffle_router.callback_query(lambda call: call.data == "become_member")
+async def choose_payment(call: CallbackQuery):
+    await call.message.edit_text(
         "Выберете способ оплаты",
         reply_markup=await payment_methods()
     )
@@ -82,7 +93,7 @@ async def send_payment_methods(call: CallbackQuery, bot: Bot) -> None:
     elif call.data == "Crypto":
         await call.message.answer(
             "<b>Временно недоступно</b>",
-            reply_markup=await user_main_markup()
+            reply_markup=await back_to_raffle_menu()
         )
 
 
@@ -96,5 +107,5 @@ async def successful_payment(message: Message):
     if message.successful_payment:
         await message.answer(
             text="Поздравляем!\nВы участник!!",
-            reply_markup=await user_main_markup()
+            reply_markup=await back_to_raffle_menu()
         )
