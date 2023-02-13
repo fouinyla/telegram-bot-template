@@ -13,7 +13,5 @@ async def set_raffle_menu() -> InlineKeyboardMarkup:
 
 async def back_to_raffle_menu() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(
-        InlineKeyboardButton(text="Назад", callback_data="back_raffle")
-    )
+    builder.row(InlineKeyboardButton(text="Назад", callback_data="back_raffle"))
     return builder.as_markup(resize_keyboard=True)

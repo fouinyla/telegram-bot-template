@@ -9,7 +9,7 @@ from aiogram.types import (
 )
 
 from bot.keyboards.inline.raffle import set_raffle_menu, back_to_raffle_menu
-from bot.keyboards.inline.payments import payment_methods
+from bot.keyboards.inline.payments import payment_methods, amount_money
 
 from app.database.models import Raffle, Winner, User
 
@@ -20,8 +20,6 @@ from settings import UKASSA_PAYMENT
 
 
 raffle_router = Router()
-
-PRICES = [LabeledPrice(label="Test label", amount=100*100)]
 
 
 @raffle_router.message(F.text == "Розыгрыш")
@@ -69,28 +67,37 @@ async def raffle_set_menu(call: CallbackQuery, session: AsyncSession) -> None:
 
 
 @raffle_router.callback_query(lambda call: call.data == "become_member")
+async def choose_amount(call: CallbackQuery):
+    await call.message.edit_text(
+        "<b>Выберете сумму оплаты</b>\n\n<i>Чем больше сумма, тем больше шанс</i>",
+        reply_markup=await amount_money()
+    )
+
+
+@raffle_router.callback_query(lambda call: call.data in [":100", ":200", ":500", ":1000", ":3000"])
 async def choose_payment(call: CallbackQuery):
     await call.message.edit_text(
         "Выберете способ оплаты",
-        reply_markup=await payment_methods()
+        reply_markup=await payment_methods(call.data)
     )
 
 
 @raffle_router.callback_query()
 async def send_payment_methods(call: CallbackQuery, bot: Bot) -> None:
     await call.message.delete()
-
-    if call.data == "UKassa":
+    price = int(call.data.split(":")[1])
+    if call.data.split(":")[0] == "UKassa":
         await bot.send_invoice(
             chat_id=call.from_user.id,
-            title="test title",
-            description="here description",
-            payload=call.data + "_method",
+            title="Участие в розыгрыше",
+            description="Ваша удача - в ваших руках. Чем больше вы положите, тем больше шанс!",
+            photo_size=416,
+            payload=call.data,
             provider_token=UKASSA_PAYMENT,
             currency="rub",
-            prices=PRICES
+            prices=[LabeledPrice(label="Test label", amount=price*100)]
         )
-    elif call.data == "Crypto":
+    elif call.data.split(":")[0] == "Crypto":
         await call.message.answer(
             "<b>Временно недоступно</b>",
             reply_markup=await back_to_raffle_menu()
