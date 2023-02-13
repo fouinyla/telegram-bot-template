@@ -14,7 +14,7 @@ from bot.keyboards.inline.payments import payment_methods
 from app.database.models import Raffle, Winner, User
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc
+from sqlalchemy import select, func, desc, insert
 
 from settings import UKASSA_PAYMENT
 
@@ -103,8 +103,16 @@ async def pre_checkout_query(checkout: PreCheckoutQuery, bot: Bot):
 
 
 @raffle_router.message()
-async def successful_payment(message: Message):
+async def successful_payment(message: Message, session: AsyncSession):
     if message.successful_payment:
+        user_id = (
+            await session.execute(
+                select(User.id)
+                .where(User.tg_id.__eq__(message.from_user.id)))
+        ).scalar()
+        await session.execute(insert(Raffle).values(user_id=user_id, donated=100))
+        await session.commit()
+
         await message.answer(
             text="Поздравляем!\nВы участник!!",
             reply_markup=await back_to_raffle_menu()
