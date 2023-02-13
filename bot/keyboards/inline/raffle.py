@@ -4,11 +4,10 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 async def set_raffle_menu() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.row(
-        InlineKeyboardButton(text="Участвовать", callback_data="become_member"),
-        InlineKeyboardButton(text="Текущий приз", callback_data="current_prize"),
-        InlineKeyboardButton(text="Победители", callback_data="winners")
-    )
+    builder.row(InlineKeyboardButton(text="Участвовать", callback_data="become_member"))
+    builder.row(InlineKeyboardButton(text="Текущий приз", callback_data="current_prize"))
+    builder.row(InlineKeyboardButton(text="Победители", callback_data="winners"))
+
     return builder.as_markup(resize_keyboard=True)
 
 
