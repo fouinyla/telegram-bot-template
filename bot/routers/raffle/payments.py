@@ -1,9 +1,10 @@
-from aiogram import Bot, Router
+from aiogram import Bot, Router, F
 from aiogram.types import (
     Message,
     LabeledPrice,
     PreCheckoutQuery,
-    CallbackQuery
+    CallbackQuery,
+    ContentType
 )
 
 from bot.keyboards.inline.raffle import back_to_raffle_menu
@@ -63,18 +64,17 @@ async def pre_checkout_query(checkout: PreCheckoutQuery, bot: Bot):
     await bot.answer_pre_checkout_query(checkout.id, ok=True)
 
 
-@payment_raffle.message()
+@payment_raffle.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 async def successful_payment(message: Message, session: AsyncSession):
-    if message.successful_payment:
-        user_id = (
-            await session.execute(
-                select(User.id)
-                .where(User.tg_id.__eq__(message.from_user.id)))
-        ).scalar()
-        await session.execute(insert(Raffle).values(user_id=user_id, donated=100))
-        await session.commit()
+    user_id = (
+        await session.execute(
+            select(User.id)
+            .where(User.tg_id.__eq__(message.from_user.id)))
+    ).scalar()
+    await session.execute(insert(Raffle).values(user_id=user_id, donated=100))
+    await session.commit()
 
-        await message.answer(
-            text="Поздравляем!\nВы участник!!",
-            reply_markup=await back_to_raffle_menu()
-        )
+    await message.answer(
+        text="Поздравляем!\nВы участник!!",
+        reply_markup=await back_to_raffle_menu()
+    )
