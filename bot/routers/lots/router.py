@@ -5,6 +5,4 @@ lots_router = Router()
 
 @lots_router.message(F.text == "Попросить помощь")
 async def lots_set_menu(message: types.Message) -> None:
-    await message.answer(
-        text="В разработке!"
-    )
+    await message.answer(text="<b>В разработке!</b>")
