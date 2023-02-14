@@ -7,7 +7,6 @@ from bot.middlewares import LoggingMiddleware
 from bot.routers.base_commands import base_commands
 from bot.routers.raffle.router import raffle_router
 from bot.routers.lots.router import lots_router
-from bot.routers.form import form_router
 
 
 bot: Bot = Bot(token=BOT_TOKEN, parse_mode="html")
@@ -18,6 +17,5 @@ dp.message.outer_middleware(LoggingMiddleware())
 
 # set routers
 dp.include_router(base_commands)
-dp.include_router(raffle_router)
 dp.include_router(lots_router)
-dp.include_router(form_router)
+dp.include_router(raffle_router)
