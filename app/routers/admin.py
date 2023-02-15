@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.bot import dp, bot
+from bot.bot import bot
 from app.database import get_session
 from app.database.models import User
 from app.schemas import MessageSchema
@@ -30,5 +30,4 @@ async def send_message_to_everyone(message: MessageSchema, session: AsyncSession
     )).all()
     user_serializer = UserSerializer()
     user_ids = user_serializer.dump(user_ids, many=True)
-    print(user_ids)
     return JSONResponse(status_code=status.HTTP_200_OK, content="ok")
