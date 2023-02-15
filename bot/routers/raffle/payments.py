@@ -4,7 +4,7 @@ from aiogram.types import (
     LabeledPrice,
     PreCheckoutQuery,
     CallbackQuery,
-    ContentType
+    ContentType,
 )
 
 from bot.keyboards.inline.raffle import back_to_raffle_menu
@@ -25,38 +25,41 @@ payment_raffle = Router()
 async def choose_amount(call: CallbackQuery):
     await call.message.edit_text(
         "<b>Выберете сумму оплаты</b>\n\n<i>Чем больше сумма, тем больше шанс</i>",
-        reply_markup=await amount_money()
+        reply_markup=await amount_money(),
     )
 
 
-@payment_raffle.callback_query(lambda call: call.data in [":100", ":200", ":500", ":1000", ":3000"])
+@payment_raffle.callback_query(
+    lambda call: call.data in [":100", ":200", ":500", ":1000", ":3000"]
+)
 async def choose_payment(call: CallbackQuery):
     await call.message.edit_text(
-        "Выберете способ оплаты",
-        reply_markup=await payment_methods(call.data)
+        "Выберете способ оплаты", reply_markup=await payment_methods(call.data)
     )
 
 
-@payment_raffle.callback_query()
+@payment_raffle.callback_query(lambda call: call.data.split(":")[0] == "UKassa")
 async def send_payment_methods(call: CallbackQuery, bot: Bot) -> None:
     await call.message.delete()
     price = int(call.data.split(":")[1])
-    if call.data.split(":")[0] == "UKassa":
-        await bot.send_invoice(
-            chat_id=call.from_user.id,
-            title="Участие в розыгрыше",
-            description="Ваша удача - в ваших руках. Чем больше ваше пополнение, тем больше шанс на победу!",
-            photo_size=416,
-            payload=call.data,
-            provider_token=UKASSA_PAYMENT,
-            currency="rub",
-            prices=[LabeledPrice(label="Test label", amount=price*100)]
-        )
-    elif call.data.split(":")[0] == "Crypto":
-        await call.message.answer(
-            "<b>Временно недоступно</b>",
-            reply_markup=await back_to_raffle_menu()
-        )
+    await bot.send_invoice(
+        chat_id=call.from_user.id,
+        title="Участие в розыгрыше",
+        description="Ваша удача - в ваших руках. Чем больше ваше пополнение, тем больше шанс на победу!",
+        photo_size=416,
+        payload=call.data,
+        provider_token=UKASSA_PAYMENT,
+        currency="rub",
+        prices=[LabeledPrice(label="Test label", amount=price * 100)],
+    )
+
+
+@payment_raffle.callback_query(lambda call: call.data.split(":")[0] == "Crypto")
+async def send_payment_methods(call: CallbackQuery, bot: Bot) -> None:
+    await call.message.delete()
+    await call.message.answer(
+        "<b>Временно недоступно</b>", reply_markup=await back_to_raffle_menu()
+    )
 
 
 @payment_raffle.pre_checkout_query(lambda query: True)
@@ -68,13 +71,12 @@ async def pre_checkout_query(checkout: PreCheckoutQuery, bot: Bot):
 async def successful_payment(message: Message, session: AsyncSession):
     user_id = (
         await session.execute(
-            select(User.id)
-            .where(User.tg_id.__eq__(message.from_user.id)))
+            select(User.id).where(User.tg_id.__eq__(message.from_user.id))
+        )
     ).scalar()
     await session.execute(insert(Raffle).values(user_id=user_id, donated=100))
     await session.commit()
 
     await message.answer(
-        text="Поздравляем!\nВы участник!!",
-        reply_markup=await back_to_raffle_menu()
+        text="Поздравляем!\nВы участник!!", reply_markup=await back_to_raffle_menu()
     )

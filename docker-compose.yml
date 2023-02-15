@@ -4,7 +4,7 @@ services:
   bot:
     image: telegram-bot
     container_name: telegram-bot
-    restart: always
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: telegram-bot-mysql
-    restart: always
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     environment:
       - MYSQL_DATABASE=${RDS_DB_NAME}
       - MYSQL_USER=${RDS_USERNAME}
@@ -43,7 +43,7 @@ services:
   redis:
     image: redis:latest
     container_name: telegram-bot-redis
-    restart: always
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     expose:
@@ -59,7 +59,7 @@ services:
   redis_commander:
     image: rediscommander/redis-commander:latest
     container_name: telegram-bot-redis-commander
-    restart: always
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     ports:
       - ${REDIS_COMMANDER_PORT}:${REDIS_COMMANDER_PORT}
     env_file:

@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Request, Depends
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.types import Update
 
-from settings import *
+from settings import DEBUG, BASE_DIR
 from bot.bot import dp, bot
 from app.database import get_session
+from app.routers import admin
 
 
 app = FastAPI(
@@ -16,10 +16,14 @@ app = FastAPI(
     version="0.0.1",
     openapi_url=None,
     docs_url=None,
-    redoc_url=None
+    redoc_url=None,
 )
-
-templates = Jinja2Templates(directory="templates")
+print(BASE_DIR)
+app.mount(
+    "/static",
+    StaticFiles(directory=f"static"),
+    name="static",
+)
 
 
 @app.get("/ifrinjhreiioqnrpwwtrte")
@@ -37,7 +41,8 @@ async def process_update(request: Request, session: AsyncSession = Depends(get_s
         logging.warning("body", await request.body())
 
 
-@app.get("/menu", response_class=HTMLResponse)
-async def get_menu_template(request: Request):
-    context = dict(request=request)
-    return templates.TemplateResponse("index.html", context=context)
+
+app.include_router(
+    admin.router,
+    prefix="/admin"
+)

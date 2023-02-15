@@ -1,12 +1,12 @@
 import logging
-from os import getenv, getcwd
+from os import getenv, path
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 logging.basicConfig(level=logging.INFO)
 
 
-BASE_DIR = getcwd()
+BASE_DIR = path.dirname(path.abspath(__file__))
 
 APP_HOSTNAME = getenv("APP_HOSTNAME")
 

@@ -31,7 +31,7 @@ async def start(message: Message, bot: Bot, session: AsyncSession):
 
     await bot.set_chat_menu_button(
         chat_id=message.chat.id,
-        menu_button=MenuButtonWebApp(text="Open Menu", web_app=WebAppInfo(url=f"{APP_HOSTNAME}/menu/"))
+        menu_button=MenuButtonWebApp(text="Admin", web_app=WebAppInfo(url=f"{APP_HOSTNAME}/admin/webapp"))
     )
 
     await message.answer(
