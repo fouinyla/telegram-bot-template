@@ -38,7 +38,7 @@ async def choose_payment(call: CallbackQuery):
     )
 
 
-@payment_raffle.callback_query(lambda call: call.data.split(":")[0] == "UKassa")
+@payment_raffle.callback_query(lambda call: call.data.split(":")[0] == "UMoney")
 async def send_payment_methods(call: CallbackQuery, bot: Bot) -> None:
     await call.message.delete()
     price = int(call.data.split(":")[1])
@@ -78,5 +78,5 @@ async def successful_payment(message: Message, session: AsyncSession):
     await session.commit()
 
     await message.answer(
-        text="Поздравляем!\nВы участник!!", reply_markup=await back_to_raffle_menu()
+        text="Поздравляем!\nВы участник!", reply_markup=await back_to_raffle_menu()
     )

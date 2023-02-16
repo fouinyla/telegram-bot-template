@@ -5,7 +5,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 async def payment_methods(amount: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
-        InlineKeyboardButton(text="ЮKassa", callback_data="UKassa" + amount),
+        InlineKeyboardButton(text="ЮMoney", callback_data="UMoney" + amount),
         InlineKeyboardButton(text="Крипта", callback_data="Crypto" + amount)
     )
     builder.row(
