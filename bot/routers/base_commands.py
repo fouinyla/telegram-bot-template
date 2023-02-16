@@ -2,7 +2,7 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command
 from aiogram.types import Message, WebAppInfo, MenuButtonWebApp
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select
+from sqlalchemy import select
 
 from bot.keyboards.reply.main_menu import user_main_markup
 from bot.const import phrases
