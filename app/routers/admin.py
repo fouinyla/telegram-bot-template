@@ -4,7 +4,6 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.bot import bot
 from app.database import get_session
 from app.database.models import User
 from app.schemas import MessageSchema
