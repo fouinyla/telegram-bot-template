@@ -1,10 +1,15 @@
-from aiogram import Router
-from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+import random
 
-from app.database.models import Winner, User
+from aiogram import Router
+from aiogram.types import CallbackQuery, Message
+from aiogram.filters import Command
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import desc, select, func, delete
+
+from app.database.models import Winner, Raffle, User
 from bot.keyboards.inline.raffle import back_to_raffle_menu
+from bot.time import get_moscow_datetime
 
 
 winner_raffle = Router()
@@ -19,7 +24,7 @@ async def show_winners(call: CallbackQuery, session: AsyncSession) -> None:
         .limit(10)
     )).all()
     if winners:
-        winner_list = "".join(f"{num}. @{winner[0]} — \n" for num, winner in enumerate(winners))
+        winner_list = "".join(f"{num}. @{winner[0]} — {winner[1]}₽\n" for num, winner in enumerate(winners, start=1))
     else:
         winner_list = "Пока никто не победил"
 
@@ -28,19 +33,35 @@ async def show_winners(call: CallbackQuery, session: AsyncSession) -> None:
         reply_markup=await back_to_raffle_menu()
     )
 
-# import random
-#
-# from sqlalchemy.ext.asyncio import AsyncSession
-# from sqlalchemy import select, func
-#
-# from app.database.models import Raffle, User
-#
-#
-# async def choose_random_winner_with_chance(session: AsyncSession):
-#     user_chances = (await session.execute(
-#         select(Raffle.user_id, 100*(Raffle.donated/func.sum(Raffle.donated)))
-#         .group_by(Raffle.donated)
-#     )).all()
-#     a = random.choices([5,7], weights=[80,20], k=1)[0]
-#     return user_chances
-#
+
+@winner_raffle.message(Command(commands="winner"))
+async def choose_random_winner_with_chance(message: Message, session: AsyncSession):
+    user_chances = (await session.execute(
+        select(User.tg_id, func.sum(Raffle.donated))
+        .join(User)
+        .group_by(Raffle.user_id)
+    )).all()
+    if user_chances:
+        total_bank = (await session.execute(select(func.sum(Raffle.donated)))).scalar()
+        user_ids, chances = [], []
+        for user, user_donation in user_chances:
+            user_ids.append(user)
+            chances.append(100*(user_donation/total_bank))
+        winner_tg_id = random.choices(user_ids, weights=chances, k=1)[0]
+        winner_id, winner_tg_username = (await session.execute(
+            select(User.id, User.tg_username)
+            .where(User.tg_id.__eq__(winner_tg_id)))
+        ).first()
+
+        user = Winner(
+            user_id=winner_id,
+            date_of_victory=get_moscow_datetime(),
+            prize=total_bank
+        )
+        session.add(user)
+        await session.execute(delete(Raffle))
+        await session.commit()
+
+        await message.answer(text=f"@{winner_tg_username}")
+    else:
+        await message.answer(text="Участники отсутствуют, ты можешь стать первым!")
