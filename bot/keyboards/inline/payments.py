@@ -1,14 +1,19 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from bot.libs.yoomoney.quickpay import Quickpay
+from bot.libs.yoomoney.quickpay.quickpay import Quickpay
+from bot.libs.yoomoney.client import Client
+from settings import YOOMONEY_TOKEN
 
 
 async def payment_methods(amount: str) -> InlineKeyboardMarkup:
+    client = Client(YOOMONEY_TOKEN)
+    user = client.account_info()
+
     quickpay = Quickpay(
-        receiver="4100118112830579",
+        receiver=user.account,
         quickpay_form="shop",
-        targets="Sponsor this project",
+        targets="Принять участие",
         paymentType="SB",
         sum=float(amount[1:]),
         label="a1b2c3d4e5"
