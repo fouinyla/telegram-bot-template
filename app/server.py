@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,7 +26,7 @@ app.mount(
 )
 
 
-@app.get("/ifrinjhreiioqnrpwwtrte")
+@app.get("/checkout_health")
 async def root():
     return "ok"
 
@@ -39,8 +37,8 @@ async def process_update(request: Request, session: AsyncSession = Depends(get_s
         update = await request.json()
         update = Update(**update)
         await dp.feed_update(bot=bot, update=update, session=session)
-    except ValueError:
-        logging.warning("body", await request.body())
+    except ValueError as _ex:
+        print(_ex)
 
 
 app.include_router(
