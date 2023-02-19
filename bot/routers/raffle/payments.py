@@ -29,9 +29,7 @@ async def choose_amount(call: CallbackQuery):
     )
 
 
-@payment_raffle.callback_query(
-    lambda call: call.data in [":100", ":200", ":500", ":1000", ":3000"]
-)
+@payment_raffle.callback_query(lambda call: call.data in [":100", ":200", ":500", ":1000", ":3000"])
 async def choose_payment(call: CallbackQuery):
     await call.message.edit_text(
         "Выберете способ оплаты", reply_markup=await payment_methods(call.data)
