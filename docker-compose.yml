@@ -4,7 +4,7 @@ services:
   bot:
     image: telegram-bot
     container_name: telegram-bot
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
 
   celery_worker:
     container_name: telegram-bot-celery-worker
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -42,9 +42,28 @@ services:
     networks:
       - local
 
+  celery_beat:
+    container_name: telegram-bot-celery-beat
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      bash -c "celery -A app.celery.init:celery_app beat --loglevel=info"
+    volumes:
+      - .:/bot
+    env_file:
+      - .env
+    depends_on:
+      - bot
+      - redis
+      - rabbitmq
+    networks:
+      - local
+
   flower:
     container_name: telegram-bot-flower
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     build:
       context: .
     command: >
@@ -66,7 +85,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: telegram-bot-mysql
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     environment:
       - MYSQL_DATABASE=${RDS_DB_NAME}
       - MYSQL_USER=${RDS_USERNAME}
@@ -84,7 +103,7 @@ services:
   redis:
     image: redis:latest
     container_name: telegram-bot-redis
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
     expose:
@@ -100,7 +119,7 @@ services:
   redis_commander:
     image: rediscommander/redis-commander:latest
     container_name: telegram-bot-redis-commander
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     ports:
       - ${REDIS_COMMANDER_PORT}:${REDIS_COMMANDER_PORT}
     env_file:
@@ -120,7 +139,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: telegram-bot-rabbitmq
-    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    restart: unless-stopped
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
