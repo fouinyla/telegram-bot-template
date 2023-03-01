@@ -7,7 +7,7 @@ repos:
     - id: poetry-lock
       always_run: true
     - id: poetry-export
-      args: ["--without-hashes", "-f", "requirements.txt", "-o", "requirements.txt"]
+      args: ["--without-hashes", "-f", "requirements.txt", "-o", "requirements.txt", "--with", "dev"]
       files: .
       always_run: true
       verbose: true

@@ -9,11 +9,13 @@ services:
       context: .
       dockerfile: Dockerfile
     command: >
-      bash -c "alembic revision --autogenerate && alembic upgrade head && python main.py"
+      bash -c "/wait && alembic revision --autogenerate && alembic upgrade head && python main.py"
     ports:
       - 80:8000
     volumes:
       - .:/bot
+    environment:
+      - WAIT_HOSTS=${RDS_HOSTNAME}:${RDS_PORT}, ${REDIS_HOST}:${REDIS_PORT}, ${RABBITMQ_HOST}:${RABBITMQ_PORT}
     env_file:
       - .env
     depends_on:
