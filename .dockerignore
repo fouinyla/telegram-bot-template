@@ -6,6 +6,7 @@
 .docker
 
 # Python
+__pycache__/
 bot/__pycache__/
 bot/*/__pycache__/
 bot/*/*/__pycache__/
@@ -14,8 +15,12 @@ bot/*/*/*/__pycache__/
 .venv/
 venv/
 
-# Local PostgreSQL data
-data/# Elastic Beanstalk Files
+# Local data
 .elasticbeanstalk/*
 .git
 .gitignore
+.platform
+poetry.lock
+pyproject.toml
+.pre-commit-config.yaml
+.vscode

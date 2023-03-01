@@ -1,38 +1,58 @@
-
-1. Clone this repo, switch to dev branch, pull changes.
+:exclamation: Note, that this project's adapted for deploying to AWS Elastic Beanstalk Docker environment.
+1. Clone this repo, switch to **dev-aiogram-3.x** branch, pull changes
 2. Create the .env file in the root with that content:
+
 ```
+#* general
+DEBUG=1
+APP_HOSTNAME=
+
+#* telegram bot
 BOT_TOKEN=
-DATABASE=mysql+pymysql://username:password@host/db_name
+
+#* database
+RDS_USERNAME=
+RDS_PASSWORD=
+RDS_HOSTNAME=
+RDS_PORT=3306
+RDS_DB_NAME=telegram-bot
+#*
+ROOT_PASSWORD=
+EXTERNAL_PORT=
+
+#* redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+#* redis commander
+REDIS_COMMANDER_PORT=18777
+REDIS_COMMANDER_USER=
+REDIS_COMMANDER_PASSWORD=
+
+#* rabbitmq
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_PORT=5672
+RABBITMQ_DEFAULT_USER=
+RABBITMQ_DEFAULT_PASS=
 ```
-3. Create a virtual environment. To do that run the command:
+Fill in all the empty variables
+
+3. Install all the dependencies. Very comfortable way to do that - with [poetry](https://python-poetry.org/docs/):
 
 ```
-python -m venv .venv   # windows
-python3 -m venv .venv  # linux or macos
+poetry install
 ```
 
-:exclamation: If you got the error like "virtualenv : command not found" - that means you don't have the virtualenv package installed. Install it with the command `pip install virtualenv` and go to the start of this step.
+4. Don't forget to enter your bot token in the .env file
 
-Then activate your venv:
+5. Activate your virtual environment with `poetry shell`
 
-(:exclamation: Important! If you're doing it in the VSCode terminal, select the cmd one)
-
-```
-.venv\Scripts\activate.bat  # windows
-source .venv/bin/activate   # linux or macos
-```
-
-:exclamation: Make sure that there's a "(.venv)" title at the start of a terminal path line - that means you've succeeded at venv-activation.
-
-4. Install dependencies:
+6. Install pre-commit hook for auto locking poetry:
 
 ```
-pip install -r requirements.txt
+pre-commit install
 ```
 
-5. Enter a bot token in the .env file for the particular key.
+7. Build the project with `docker compose build` and run with `docker compose up`
 
-6. Run the project with the `python polling.py` command.
-
-Have fun!
+Have fun developing!

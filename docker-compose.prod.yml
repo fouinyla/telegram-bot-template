@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  bot:
+    image: telegram-bot
+    container_name: telegram-bot
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      bash -c "alembic revision --autogenerate && alembic upgrade head && python main.py"
+    ports:
+      - 80:8000
+    volumes:
+      - .:/bot
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - local
+
+  celery_worker:
+    container_name: telegram-bot-celery-worker
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      bash -c "celery -A app.celery worker --loglevel=info"
+    volumes:
+      - .:/bot
+    env_file:
+      - .env
+    depends_on:
+      - bot
+      - redis
+      - rabbitmq
+    networks:
+      - local
+
+  redis:
+    image: redis:latest
+    container_name: telegram-bot-redis
+    restart: always
+    expose:
+      - ${REDIS_PORT}
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/var/lib/redis
+    env_file:
+      - .env
+    networks:
+      - local
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: telegram-bot-rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    expose:
+      - ${RABBITMQ_PORT}
+    env_file:
+      - .env
+    networks:
+      - local
+
+volumes:
+  redis:
+
+
+networks:
+  local:
+    driver: bridge

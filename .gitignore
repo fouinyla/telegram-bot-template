@@ -106,3 +106,6 @@ test.py
 app/database/mysql-conf
 app/database/mysql-data
 app/database/mysql-log
+
+# alembic migrations
+migrations/versions/*

@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     command: >
-      bash -c "alembic upgrade head && python main.py"
+      bash -c "alembic revision --autogenerate && alembic upgrade head && python main.py"
     ports:
       - 80:8000
     volumes:
@@ -74,8 +74,6 @@ services:
       - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
     ports:
       - ${EXTERNAL_PORT}:${RDS_PORT}
-    expose:
-      - ${RDS_PORT}
     volumes:
       - ./app/database/mysql-data:/var/lib/mysql
       - ./app/database/mysql-log:/var/log/mysql
@@ -91,8 +89,6 @@ services:
     restart: always
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
-    expose:
-      - ${REDIS_PORT}
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - redis:/var/lib/redis
