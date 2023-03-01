@@ -1,5 +1,5 @@
 :exclamation: Note, that this project's adapted for deploying to AWS Elastic Beanstalk Docker environment.
-1. Clone this repo, switch to **dev-aiogram-3.x** branch, pull changes
+1. Fork this repo, switch to **dev-aiogram-3.x** branch, pull changes
 2. Create the .env file in the root with that content:
 
 ```
