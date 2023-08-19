@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:latest
+    container_name: telegram-bot-redis
+    restart: unless-stopped
+    ports:
+      - ${REDIS_PORT}:6379
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/var/lib/redis
+    env_file:
+      - .env
+    networks:
+      - local
+
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: telegram-bot-redis-commander
+    restart: unless-stopped
+    ports:
+      - ${REDIS_COMMANDER_PORT}:${REDIS_COMMANDER_PORT}
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOSTS=${REDIS_HOST}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - HTTP_USER=${REDIS_COMMANDER_USER}
+      - HTTP_PASSWORD=${REDIS_COMMANDER_PASSWORD}
+      - PORT=${REDIS_COMMANDER_PORT}
+    depends_on:
+      - redis
+    networks:
+      - local
+
+volumes:
+  redis:

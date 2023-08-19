@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  alembic:
+    image: alembic:latest
+    container_name: bot_alembic
+    build:
+      context: ${PWD}
+      dockerfile: docker/Dockerfile
+    command: /bin/bash -c \
+      "echo '[+] Run migrations' && \
+      alembic stamp head --purge && \
+      alembic revision --autogenerate -m "Migrations" && \
+      alembic upgrade head"
+    volumes:
+      - ${PWD}/:/app
+    env_file:
+      - ${PWD}/.env
+    depends_on:
+      database:
+        condition: service_healthy

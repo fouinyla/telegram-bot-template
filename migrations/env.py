@@ -28,11 +28,11 @@ target_metadata = Base.metadata
 
 def get_url():
     return "mysql+pymysql://{user}:{password}@{host}:{port}/{db_name}".format(
-        user=getenv("RDS_USERNAME"),
-        password=getenv("RDS_PASSWORD"),
-        host=getenv("RDS_HOSTNAME"),
-        port=getenv("RDS_PORT"),
-        db_name=getenv("RDS_DB_NAME"),
+        user=getenv("DATABASE_USERNAME"),
+        password=getenv("DATABASE_PASSWORD"),
+        host=getenv("DATABASE_HOSTNAME"),
+        port=getenv("DATABASE_PORT"),
+        db_name=getenv("DATABASE_NAME"),
     )
 
 def run_migrations_offline() -> None:

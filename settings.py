@@ -15,11 +15,11 @@ DEBUG = bool(int(getenv("DEBUG", 0)))
 BOT_TOKEN = getenv("BOT_TOKEN")
 
 DATABASE = dict(
-    host=getenv('RDS_HOSTNAME'),
-    port=getenv('RDS_PORT'),
-    db_name=getenv('RDS_DB_NAME'),
-    user=getenv('RDS_USERNAME'),
-    password=getenv('RDS_PASSWORD')
+    host=getenv('DATABASE_HOSTNAME'),
+    port=getenv('DATABASE_PORT'),
+    db_name=getenv('DATABASE_NAME'),
+    user=getenv('DATABASE_USERNAME'),
+    password=getenv('DATABASE_PASSWORD')
 )
 
 if DEBUG:

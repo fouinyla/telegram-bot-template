@@ -1,0 +1,7 @@
+version: "3.9"
+
+name: "embassy_bot"
+
+networks:
+  local:
+    driver: bridge
