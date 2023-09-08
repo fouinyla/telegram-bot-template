@@ -1,24 +1,24 @@
 version: "3.9"
 
 services:
-  bot:
-    image: telegram-bot
+  app:
+    image: embassy_bot:latest
     container_name: bot_app
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: >
-      bash -c "python main.py"
-    ports:
-      - ${APP_EXPOSE_PORT}:8000
+    build: 
+      context: ${PWD}
+      dockerfile: docker/Dockerfile
+    command: /bin/bash -c \
+      "echo '[+] Run backend' && \
+      python main.py"
     volumes:
-      - .:/bot
+      - ${PWD}:/app
     env_file:
-      - .env
+      - ${PWD}/.env
     depends_on:
       - database
       - redis
-      - rabbitmq
+    expose:
+      - ${APP_EXPOSE_PORT}
     networks:
       - local

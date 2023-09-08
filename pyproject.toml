@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "telegram-bot-template"
+name = "embassy_bot"
 version = "0.1.0"
 description = ""
 authors = ["oregu"]

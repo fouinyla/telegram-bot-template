@@ -4,6 +4,7 @@ docker_compose_v2 = docker compose
 
 app_dir = app
 compose_dir = docker/compose
+env_file = --env-file .env
 
 main_container = -f $(compose_dir)/main.yml
 app_container = -f $(compose_dir)/app.yml
@@ -12,7 +13,7 @@ alembic_container = -f $(compose_dir)/alembic.yml
 redis_container = -f $(compose_dir)/redis.yml
 celery_container = -f $(compose_dir)/celery.yml
 
-compose_app = $(docker_compose_v2) $(main_container) $(app_container) $(database_container) $(redis_container) $(celery_container)
+compose_app = $(docker_compose_v2) $(main_container) $(app_container) $(database_container) $(redis_container) $(celery_container) $(env_file)
 compose_migrations = $(docker_compose_v2) $(main_container) $(alembic_container)
 
 # ===========================================================================
@@ -32,8 +33,7 @@ clean:
 
 .PHONY: build all composes
 build:
-	$(compose_app) build
-	$(compose_migrations) build
+	$(compose_app) build --no-cache
 
 .PHONY: stop all composes
 stop:

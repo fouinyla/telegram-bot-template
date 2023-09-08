@@ -2,40 +2,41 @@ version: "3.9"
 
 services:
   celery_worker:
+    image: embassy_bot:latest
     container_name: bot_celery_worker
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:
+    #   context: ${PWD}/docker
     command: >
       bash -c "celery -A app.celery worker --loglevel=info"
     volumes:
-      - .:/bot
+      - ${PWD}/:/app
     env_file:
-      - .env
+      - ${PWD}/.env
     depends_on:
       - redis
-      - rabbitmq
     networks:
       - local
 
   flower:
+    image: embassy_bot:latest
     container_name: bot_flower
     restart: unless-stopped
-    build:
-      context: .
+    # build:
+    #   context: ${PWD}/docker
     command: >
       bash -c "celery -A app.celery flower --port=5555"
     ports:
       - 5555:5555
-    volumes:
-      - .:/bot
+    # volumes:
+    #   - ${PWD}:/bot
     environment:
       - CELERY_BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
       - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}/1
+    env_file:
+      - ${PWD}/.env
     depends_on:
       - celery_worker
       - redis
-      - rabbitmq
     networks:
       - local

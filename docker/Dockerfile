@@ -1,19 +1,18 @@
-FROM python:3.9.16-slim-buster
-LABEL maintainer="oregu"
+FROM python:3.11.1
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV PATH="${PATH}:/root/.poetry/bin"
 
-WORKDIR /bot/
-EXPOSE 8000
+WORKDIR /app
 
 RUN python -m pip install --upgrade pip
 
-COPY /requirements.txt ./requirements.txt
-RUN pip install -r requirements.txt
+COPY ../pyproject.toml /app/pyproject.toml
 
-RUN adduser --disabled-password --no-create-home app
+# ADD requirements.txt /bot
+RUN python -m pip install poetry
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
-ENV PYTHONPATH=${PYTHONPATH}:/bot
-
-USER app
+COPY . /app
