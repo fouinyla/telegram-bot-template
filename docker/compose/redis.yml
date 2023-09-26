@@ -3,7 +3,7 @@ version: "3.9"
 services:
   redis:
     image: redis:latest
-    container_name: telegram-bot-redis
+    container_name: bot_redis
     restart: unless-stopped
     ports:
       - ${REDIS_PORT}:6379
@@ -17,7 +17,7 @@ services:
 
   redis_commander:
     image: rediscommander/redis-commander:latest
-    container_name: telegram-bot-redis-commander
+    container_name: bot_redis_commander
     restart: unless-stopped
     ports:
       - ${REDIS_COMMANDER_PORT}:${REDIS_COMMANDER_PORT}

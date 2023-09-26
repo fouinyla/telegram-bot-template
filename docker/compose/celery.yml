@@ -8,7 +8,7 @@ services:
     # build:
     #   context: ${PWD}/docker
     command: >
-      bash -c "celery -A app.celery worker --loglevel=info"
+      bash -c "celery -A app.celery:celery_app worker -B --loglevel=info"
     volumes:
       - ${PWD}:/app
     env_file:
@@ -17,6 +17,22 @@ services:
       - redis
     networks:
       - local
+
+  # celery_beat:
+  #   image: embassy_bot:latest
+  #   container_name: bot_celery_beat
+  #   restart: unless-stopped
+  #   command: >
+  #     bash -c "celery -A app.celery:celery_app beat --loglevel=info"
+  #   volumes:
+  #     - ${PWD}:/app
+  #   env_file:
+  #     - ${PWD}/.env
+  #   depends_on:
+  #     - redis
+  #   networks:
+  #     - local
+
 
   # flower:
   #   image: embassy_bot:latest
