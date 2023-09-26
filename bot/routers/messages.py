@@ -1,8 +1,6 @@
 from aiogram import Router, types, F
-from aiogram.filters import Text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models import *
 from bot.filters import CustomMessageFilter
 
 
@@ -19,14 +17,14 @@ async def start(message: types.Message, session: AsyncSession) -> None:
 
 # using magic filters
 # https://docs.aiogram.dev/en/dev-3.x/dispatcher/filters/magic_filters.html
-@messages_router.message(F.text == "lol")
+@messages_router.message(F.is_("lol"))
 async def start(message: types.Message, session: AsyncSession) -> None:
     await message.answer(
         text="lmao"
     )
 
 
-@messages_router.message(Text(contains="yes"))
+@messages_router.message(F.contains("yes"))
 async def start(message: types.Message, session: AsyncSession) -> None:
     await message.answer(
         text="Of course!"

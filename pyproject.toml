@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "telegram-bot-template"
+name = "embassy_bot"
 version = "0.1.0"
 description = ""
 authors = ["oregu"]
@@ -7,37 +7,21 @@ readme = "README.md"
 packages = []
 
 [tool.poetry.dependencies]
-python = "3.9.16"
-aiomysql = "^0.1.1"
-fastapi = "^0.89.1"
-PyMySQL = "^1.0.2"
-python-dotenv = "^0.21.1"
-SQLAlchemy = "^2.0.1"
-uvicorn = {extras = ["standard"], version = "^0.20.0"}
-aiogram = {version = "^3.0.0b6", allow-prereleases = true}
-alembic = "^1.9.2"
-cryptography = "^39.0.0"
+python = "3.11.1"
+# cryptography = "^39.0.0"
+asyncpg = "^0.28.0"
+fastapi = "^0.101.1"
+sqlalchemy = "^2.0.20"
+uvicorn = "^0.23.2"
+alembic = "^1.11.3"
+redis = "^5.0.0"
+celery = "^5.3.1"
+pydantic-settings = "^2.0.3"
+stringcase = "^1.2.0"
+pytz = "^2023.3.post1"
+pydantic = "2.1.1"
+aiogram = "^3.1.1"
 jinja2 = "^3.1.2"
-redis = "^4.4.2"
-celery = "^5.2.7"
-
-[tool.poetry.group.dev.dependencies]
-python = "3.9.16"
-aiomysql = "^0.1.1"
-fastapi = "^0.89.1"
-PyMySQL = "^1.0.2"
-python-dotenv = "^0.21.1"
-SQLAlchemy = "^2.0.1"
-uvicorn = {extras = ["standard"], version = "^0.20.0"}
-aiogram = {version = "^3.0.0b6", allow-prereleases = true}
-alembic = "^1.9.2"
-pre-commit = "^3.0.3"
-autopep8 = "^2.0.1"
-cryptography = "^39.0.0"
-jinja2 = "^3.1.2"
-redis = "^4.4.2"
-celery = "^5.2.7"
-flower = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core"]

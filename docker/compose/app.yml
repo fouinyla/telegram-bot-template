@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  app:
+    image: embassy_bot:latest
+    container_name: bot_app
+    restart: unless-stopped
+    build: 
+      context: ${PWD}
+      dockerfile: docker/Dockerfile
+    command: /bin/bash -c \
+      "echo '[+] Run backend' && \
+      python main.py"
+    volumes:
+      - ${PWD}:/app
+    env_file:
+      - ${PWD}/.env
+    depends_on:
+      - database
+      - redis
+    ports:
+      - ${APP_EXPOSE_PORT}:8000
+    expose:
+      - ${APP_EXPOSE_PORT}
+    networks:
+      - local

@@ -108,4 +108,8 @@ app/database/mysql-data
 app/database/mysql-log
 
 # alembic migrations
-migrations/versions/*
+alembic/versions/*
+!alembic/versions/init.py
+
+# poetry 
+poetry.lock

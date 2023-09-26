@@ -2,13 +2,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 
 from .decorators import *
-from settings import BOT_TOKEN, REDIS
+from app.settings import bot_settings, redis_settings
 from .routers import commands_router, form_router, messages_router
 from .middlewares import LoggingMiddleware
 
 
-bot = Bot(token=BOT_TOKEN, parse_mode="html")
-dp = Dispatcher(storage=RedisStorage.from_url(REDIS))
+bot = Bot(token=bot_settings.TOKEN, parse_mode="html")
+dp = Dispatcher(storage=RedisStorage.from_url(redis_settings.url))
 
 # set middlewares
 dp.message.outer_middleware(LoggingMiddleware())
