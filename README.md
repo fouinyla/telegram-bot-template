@@ -1,4 +1,3 @@
-:exclamation: Note, that this project's adapted for deploying to AWS Elastic Beanstalk Docker environment.
 1. Fork this repo, switch to **dev-aiogram-3.x** branch, pull changes
 2. Create the .env file in the root with that content:
 
@@ -6,19 +5,20 @@
 #* general
 DEBUG=1
 APP_HOSTNAME=
+APP_EXPOSE_PORT=
 
 #* telegram bot
 BOT_TOKEN=
 
 #* database
-DATABASE_USERNAME=
-DATABASE_PASSWORD=
-DATABASE_HOSTNAME=
-DATABASE_PORT=3306
-DATABASE_NAME=telegram-bot
+DATABASE_DRIVER=postgresql+asyncpg
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_HOSTNAME=database
+DATABASE_PORT=5432
+DATABASE_NAME=postgres
 #*
-ROOT_PASSWORD=
-EXTERNAL_PORT=
+DATABASE_PORT_EXPOSE=5432
 
 #* redis
 REDIS_HOST=redis
