@@ -1,53 +1,53 @@
-from os import path
 from aiogram import Router, Bot
 from aiogram.types import Message, FSInputFile, MenuButtonWebApp, WebAppInfo
 from aiogram.filters import Command, ExceptionMessageFilter
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select
 
-from app.database.models import *
+from app.database.orm import UserModel
 import bot.const.phrases as phrases
 from bot import markups
-from settings import BASE_DIR, APP_HOSTNAME
-from app.celery.tasks import send_message
+from app.settings import application_settings
+from bot.background_tasks import send_message_task
 
 commands_router = Router()
 
 
 @commands_router.message(Command(commands=["start"]))
 async def start(message: Message, bot: Bot, session: AsyncSession) -> None:
-    name = message.from_user.first_name
+    first_name = message.from_user.first_name
     markup = markups.user_main_markup()
-    text = phrases.phrase_for_start_first_greeting(
-        data=dict(
-            user_name=name
-        )
-    )
+    text = phrases.phrase_for_start_first_greeting(data=dict(user_name=first_name))
 
     # sending image sticker
-    sticker = FSInputFile(path.join(BASE_DIR, "static/hello.webp"))
+    sticker = FSInputFile("static/hello.webp")
     await message.answer_sticker(sticker)
 
     # check if user exists
-    query = await session.execute(
-        select(User).
-        where(User.tg_id.__eq__(message.from_user.id))
-    )
-    user = query.scalar()
+    user = (
+        await session.execute(
+            select(UserModel).where(UserModel.tg_id.__eq__(message.from_user.id))
+        )
+    ).scalar()
 
     # if not => create
     if not user:
-        session.add(User(
-            name=name,
-            tg_id=message.from_user.id,
-            tg_username=message.from_user.username,
-            is_admin=False
-        ))
+        session.add(
+            UserModel(
+                first_name=first_name,
+                tg_id=message.from_user.id,
+                tg_username=message.from_user.username,
+                is_admin=False,
+            )
+        )
         await session.commit()
 
     await bot.set_chat_menu_button(
         chat_id=message.chat.id,
-        menu_button=MenuButtonWebApp(text="Open Menu", web_app=WebAppInfo(url=f"{APP_HOSTNAME}/menu/")),
+        menu_button=MenuButtonWebApp(
+            text="Open Menu",
+            web_app=WebAppInfo(url=f"{application_settings.APP_HOSTNAME}/menu/"),
+        ),
     )
 
     await message.answer(
@@ -58,7 +58,7 @@ async def start(message: Message, bot: Bot, session: AsyncSession) -> None:
 
 @commands_router.message(Command(commands=["check"]))
 async def check(message: Message, bot: Bot) -> None:
-    task = send_message.apply_async(args=[message.from_user.id])
+    task = send_message_task.apply_async(args=[message.from_user.id])
 
     await message.answer(
         text="Ok",

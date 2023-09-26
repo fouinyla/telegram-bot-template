@@ -1,16 +1,19 @@
-from fastapi import FastAPI, Request, Depends
+import logging
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.types import Update
 
-from settings import *
+from .settings import application_settings
 from bot.bot import dp, bot
-from app.database import get_session
+from app.core.depends import DatabaseSession
 
+
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    debug=DEBUG,
+    debug=application_settings.DEBUG,
     title="Telegram Bot",
     description="",
     version="0.0.1",
@@ -28,7 +31,7 @@ async def root():
 
 
 @app.post("/")
-async def process_update(request: Request, session: AsyncSession = Depends(get_session)):
+async def process_update(request: Request, session: DatabaseSession):
     try:
         update = await request.json()
         update = Update(**update)

@@ -13,8 +13,14 @@ alembic_container = -f $(compose_dir)/alembic.yml
 redis_container = -f $(compose_dir)/redis.yml
 celery_container = -f $(compose_dir)/celery.yml
 
+capture_exit_code = --abort-on-container-exit --exit-code-from
+exit_code_population = population
+exit_code_tests = tests
+exit_code_migrations = alembic
+
 compose_app = $(docker_compose_v2) $(main_container) $(app_container) $(database_container) $(redis_container) $(celery_container) $(env_file)
-compose_migrations = $(docker_compose_v2) $(main_container) $(alembic_container)
+compose_database = $(docker_compose_v2) $(main_container) $(database_container) $(env_file)
+compose_migrations = $(docker_compose_v2) $(main_container) $(alembic_container) ${database_container} ${env_file}
 
 # ===========================================================================
 
@@ -26,6 +32,11 @@ clean:
 	rm -rf `find . -type f -name '*~'`
 	rm -rf `find . -type f -name '.*~'`
 	rm -rf {.cache,.ruff_cache,.mypy_cache,.coverage,htmlcov,.pytest_cache}
+	rm -rf `find ./alembic/versions -type f ! -name 'init.py'`
+
+.PHONY: delete docker cache
+prune:
+	docker system prune --all --force --volumes
 
 # ===========================================================================
 
@@ -98,7 +109,7 @@ migrations-build:
 
 .PHONY: run migrations
 migrations:
-	$(compose_migrations) up
+	$(compose_migrations) up $(capture_exit_code) $(exit_code_migrations)
 
 .PHONY: stop migrations
 migrations-stop:
@@ -111,5 +122,25 @@ migrations-down:
 .PHONY: destroy migrations
 migrations-destroy:
 	$(compose_migrations) down -v
+
+# ===========================================================================
+
+# =============================== DATABASE ==================================
+
+.PHONY: run database
+database:
+	$(compose_database) up -d
+
+.PHONY: stop database
+database-stop:
+	$(compose) stop
+
+.PHONY: down database
+database-down:
+	$(compose_database) down
+
+.PHONY: destroy database
+database-destroy:
+	$(compose_database) down -v
 
 # ===========================================================================

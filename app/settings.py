@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,8 +19,7 @@ application_settings = ApplicationSettings()
 
 
 class BotSettings(BaseSettings):
-    BOT_TOKEN: str
-
+    TOKEN: str = Field(validation_alias="BOT_TOKEN")
 
 bot_settings = BotSettings()
 
@@ -57,5 +57,13 @@ class RedisSettings(BaseSettings):
     REDIS_COMMANDER_USER: str
     REDIS_COMMANDER_PASSWORD: str
 
+    @property
+    def url(self) -> str:
+        host, port = (
+            self.REDIS_HOST,
+            self.REDIS_PORT,
+        )
+
+        return f'redis://{host}:{port}/0'
 
 redis_settings = RedisSettings()
