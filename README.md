@@ -41,7 +41,7 @@
     ```
     poetry install
     ```
-    It's needed for all packages to be seen in the imports
+    It's needed for all packages to be seen by your ide in the imports
     </br>
     </br>
 
