@@ -4,7 +4,7 @@ import asyncio
 from app.celery import celery_app
 
 
-@celery_app.task(queue="light")
+@celery_app.task()
 def send_message(chat_id):
     from bot import bot_instance
 

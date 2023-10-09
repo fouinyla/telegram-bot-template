@@ -11,8 +11,12 @@ class Settings(BaseSettings):
 
 class ApplicationSettings(BaseSettings):
     DEBUG: bool = False
+    RELOAD: bool = False
     APP_HOSTNAME: str
     APP_EXPOSE_PORT: int = 80
+    OPENAPI_URL: str = '/openapi.json'
+    DOCS_URL: str = '/docs'
+    REDOC_URL: str = '/redoc'
 
 
 application_settings = ApplicationSettings()
