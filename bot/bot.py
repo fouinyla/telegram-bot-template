@@ -4,7 +4,6 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.types import ErrorEvent, Message
 from aiogram.fsm.storage.redis import RedisStorage
 
-from .decorators import *
 from app import logger
 from app.settings import bot_settings, redis_settings
 from .routers import commands_router, form_router, messages_router
