@@ -45,7 +45,10 @@
     </br>
     </br>
 
-1. Activate your virtual environment with `poetry shell`
+1. Activate your virtual environment with:
+    ```
+    poetry shell
+    ```
 
 1. Install pre-commit hook for auto locking poetry:
 
