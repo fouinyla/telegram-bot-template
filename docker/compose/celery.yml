@@ -2,50 +2,68 @@ version: "3.9"
 
 services:
   celery_worker:
-    image: embassy_bot:latest
-    container_name: bot_celery_worker
+    # properties
+    image: telegram_bot:latest
+    container_name: tg_bot_celery_worker
+
+    # settings
     restart: unless-stopped
-    # build:
-    #   context: ${PWD}/docker
+
+    # commands
     command: >
       bash -c "celery -A app.celery:celery_app worker -B --loglevel=info"
-    volumes:
-      - ${PWD}:/app
+
+    # dependencies
     env_file:
       - ${PWD}/.env
     depends_on:
       - redis
+
+    # attachments
+    volumes:
+      - ${PWD}:/app
     networks:
       - local
 
   # celery_beat:
+  #   # properties
   #   image: embassy_bot:latest
   #   container_name: bot_celery_beat
+
+  #   # settings
   #   restart: unless-stopped
+
+  #   # commands
   #   command: >
   #     bash -c "celery -A app.celery:celery_app beat --loglevel=info"
-  #   volumes:
-  #     - ${PWD}:/app
+
+  #   # dependencies
   #   env_file:
   #     - ${PWD}/.env
   #   depends_on:
   #     - redis
+
+  #   # attachments
+  #   volumes:
+  #     - ${PWD}:/app
   #   networks:
   #     - local
 
-
   # flower:
+  #   # properties
   #   image: embassy_bot:latest
   #   container_name: bot_flower
+
+  #   # settings
   #   restart: unless-stopped
-  #   # build:
-  #   #   context: ${PWD}/docker
-  #   command: >
-  #     bash -c "celery -A app.celery flower --port=5555"
   #   ports:
   #     - 5555:5555
-  #   # volumes:
-  #   #   - ${PWD}:/bot
+
+  #   # commands
+  #   command: >
+  #     bash -c "celery -A app.celery flower --port=5555"
+
+  #   # dependencies
   #   environment:
   #     - CELERY_BROKER_URL=redis://${REDIS_HOST}:${REDIS_PORT}/0
   #     - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}/1
@@ -54,5 +72,7 @@ services:
   #   depends_on:
   #     - celery_worker
   #     - redis
+
+  #   # attachments
   #   networks:
   #     - local

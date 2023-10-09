@@ -2,27 +2,41 @@ version: "3.9"
 
 services:
   redis:
+    # properties
     image: redis:latest
-    container_name: bot_redis
+    container_name: tg_bot_redis
+
+    # settings
     restart: unless-stopped
     ports:
       - ${REDIS_PORT}:6379
+
+    # commands
     command: redis-server --save 20 1 --loglevel warning
-    volumes:
-      - redis:/var/lib/redis
+
+    # dependencies
     env_file:
       - ${PWD}/.env
+
+    # attachments
+    volumes:
+      - redis:/var/lib/redis
     networks:
       - local
 
   redis_commander:
+    # properties
     image: rediscommander/redis-commander:latest
-    container_name: bot_redis_commander
+    container_name: telegram_bot_redis_commander
+
+    # settings
     restart: unless-stopped
     ports:
       - ${REDIS_COMMANDER_PORT}:${REDIS_COMMANDER_PORT}
-    env_file:
-      - ${PWD}/.env
+
+    # commands
+
+    # dependencies
     environment:
       - REDIS_HOSTS=${REDIS_HOST}
       - REDIS_HOST=${REDIS_HOST}
@@ -30,10 +44,11 @@ services:
       - HTTP_USER=${REDIS_COMMANDER_USER}
       - HTTP_PASSWORD=${REDIS_COMMANDER_PASSWORD}
       - PORT=${REDIS_COMMANDER_PORT}
+    env_file:
+      - ${PWD}/.env
     depends_on:
       - redis
+
+    # attachments
     networks:
       - local
-
-volumes:
-  redis:
