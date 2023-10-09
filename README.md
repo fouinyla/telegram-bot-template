@@ -34,7 +34,6 @@
     ```
     Fill in all the empty variables (don't forget to enter your bot token in the .env file)
     </br>
-    </br>
 
 1. Install all dependencies via [poetry](https://python-poetry.org/docs/):
 
@@ -42,7 +41,6 @@
     poetry install
     ```
     It's needed for all packages to be seen by your ide in the imports
-    </br>
     </br>
 
 1. Activate your virtual environment with:
