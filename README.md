@@ -53,25 +53,21 @@
     ```
     pre-commit install
     ```
-    </br>
 
 1. Build the project with command: 
     ```
     make build
     ```
-    </br>
 
 1. Migrate models to db with command:
     ```
     make migrations
     ```
-    </br>
 
 1. Run the project with command:
     ```
     make app
     ```
-    </br>
 
 For more useful commands see **Makefile**.
 </br>
