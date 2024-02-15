@@ -113,3 +113,6 @@ alembic/versions/*
 
 # poetry 
 poetry.lock
+
+# celery
+celerybeat-schedule
